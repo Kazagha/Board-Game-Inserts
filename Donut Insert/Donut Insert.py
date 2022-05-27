@@ -25,11 +25,15 @@ def create_donut(diameter, insert_diameter, height, solid_bottom):
 def donut_insert():
     outer_diameter = 100
     insert_diameter = 20
+    outer_wall_thickness = insert_diameter - (wall * 2)
     height = 20
     solid_bottom = True
 
     donut = create_donut(outer_diameter, insert_diameter, height, solid_bottom)
-
+    stack = (cylinder(d=insert_diameter,h=height))
+    stack = translate([outer_diameter/2 - outer_wall_thickness / 2, 0, wall])(stack)
+    donut -= stack
+    
     return donut
 
 if __name__ == '__main__':
