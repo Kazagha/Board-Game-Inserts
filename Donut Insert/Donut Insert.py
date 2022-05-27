@@ -7,17 +7,11 @@ from solid.utils import right,left,up,down,minkowski
 from math import sin,cos
 
 SEGMENTS = 48
+wall = 3
 
-def donut_insert():
-    outer_diameter = 100
-    insert_diameter = 20
-    wall = 3
-    height = 20
-    solid_bottom = True
-
-    inner_diameter = outer_diameter - insert_diameter - (wall * 2)
-    donut = (cylinder(d=outer_diameter,h=height))
-    inner_hole = (cylinder(d=inner_diameter, h=height + wall * 2))
+def create_donut(diameter, insert_diameter, height, solid_bottom):
+    inner_diameter = diameter - insert_diameter - (wall * 2)
+    donut = (cylinder(d=diameter,h=height))
 
     if(solid_bottom):
             z_offset = wall
@@ -26,6 +20,15 @@ def donut_insert():
 
     inner_hole = translate([0, 0, z_offset])(cylinder(d=inner_diameter, h=height + wall * 2))
     donut -= inner_hole
+    return donut
+
+def donut_insert():
+    outer_diameter = 100
+    insert_diameter = 20
+    height = 20
+    solid_bottom = True
+
+    donut = create_donut(outer_diameter, insert_diameter, height, solid_bottom)
 
     return donut
 
