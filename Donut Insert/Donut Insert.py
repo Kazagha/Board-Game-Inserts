@@ -3,7 +3,7 @@ import sys
 
 from solid import scad_render_to_file
 from solid.objects import cube, cylinder, difference, translate, union, hull, rotate
-from solid.utils import right,left,up,down,minkowski
+from solid.utils import right,left,up,down,minkowski,rotate_extrude
 from math import sin,cos,pi
 
 SEGMENTS = 48
@@ -31,20 +31,21 @@ def donut_insert():
     # Determine the diameter of the circle
     #  - Calc circumference, number of stack with extra space
     #  - Calc diameter, circumference / pi
-    outer_diameter = insert_diameter * number_of_stacks * 1.75 / pi
-    # Determine the thickness of the outer ring
-    outer_wall_thickness = insert_diameter - (wall * 2)
+    outer_diameter = insert_diameter * number_of_stacks * 2 / pi
+    # Make the out wall thickness slightly less than the insert
+    outer_wall_thickness = insert_diameter - 1.5
 
     donut = create_donut(outer_diameter, outer_wall_thickness, height, solid_bottom)
     rotate_step = 360 / number_of_stacks
     stack = (cylinder(d=insert_diameter, h=height))
     stack = translate([outer_diameter / 2 - outer_wall_thickness / 2, 0, wall])(stack)
     for i in range(number_of_stacks):
-        #stack = translate([outer_diameter / 2 - outer_wall_thickness / 2, 0, wall])(stack)
-
         donut -= rotate([0,0,i * rotate_step])(stack)
 
-    return donut
+    lid = (cylinder(d=outer_diameter + wall, h = wall * 2))
+    lid -= (translate([0,0,wall]))(cylinder(d=outer_diameter, h = wall+1))
+    lid = (translate([75,0,0]))(lid)
+    return donut + lid
 
 if __name__ == '__main__':
     out_dir = sys.argv[1] if len(sys.argv) > 1 else None
