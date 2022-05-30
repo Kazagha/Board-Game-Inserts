@@ -3,7 +3,7 @@ import sys
 
 from solid import scad_render_to_file
 from solid.objects import cube, cylinder, difference, translate, union, hull, rotate
-from solid.utils import right,left,up,down,minkowski,rotate_extrude
+from solid.utils import right,left,up,down,minkowski,rotate_extrude,distribute_in_grid
 from math import sin,cos,pi
 
 SEGMENTS = 48
@@ -45,7 +45,8 @@ def donut_insert():
     lid = (cylinder(d=outer_diameter + wall, h = wall * 2))
     lid -= (translate([0,0,wall]))(cylinder(d=outer_diameter, h = wall+1))
     lid = (translate([75,0,0]))(lid)
-    return donut + lid
+    all_objects = [donut, lid]
+    return distribute_in_grid(all_objects,max_bounding_box=[5,5],rows_and_cols=[len(all_objects),1],)
 
 if __name__ == '__main__':
     out_dir = sys.argv[1] if len(sys.argv) > 1 else None
