@@ -13,8 +13,21 @@ def tokens_and_insert():
     height = 22
     token_diameter = 20
     number_of_tokens = 5
+    length = 100
+    # Calculated Variables
+    width = (token_diameter + wall) * number_of_tokens + (wall * 2)
 
-    return (cube([1,1,1]))
+    token = (cylinder(d=token_diameter, h=height + wall))
+    all_tokens = (cube([0,0,0]))
+    for i in range(number_of_tokens):
+        all_tokens += translate([((token_diameter + wall) * i  ),0,0])(token)
+
+    token_box = (cube([width,token_diameter, height + wall]))
+    token_box -= translate([(token_diameter / 2) + wall, (token_diameter / 2) - wall, wall])(all_tokens)
+
+    #distribute_in_grid(all_objects, max_bounding_box=[5, 5], rows_and_cols=[len(all_objects), 1], )
+
+    return token_box
 
 if __name__ == '__main__':
     out_dir = sys.argv[1] if len(sys.argv) > 1 else None
