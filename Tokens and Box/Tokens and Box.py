@@ -13,7 +13,7 @@ def tokens_and_insert():
     height = 44 + wall
     token_diameter = 20
     number_of_tokens = 5
-    tolerence = 0.5
+    tolerence = 0.25
 
     # Calculated Variables
     width = (token_diameter + wall) * number_of_tokens + (wall)
@@ -54,7 +54,7 @@ def tokens_and_insert():
     # Add the lip to the lid
     lid += lid_lip
 
-    # Combine all objects for output 
+    # Combine all objects for output
     all_objects = [main_box, lid]
     all_objects = distribute_in_grid(all_objects
                                      ,max_bounding_box=[width + 25,main_box_length + 25]
