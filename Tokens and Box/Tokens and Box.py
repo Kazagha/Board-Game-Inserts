@@ -4,10 +4,12 @@ import sys
 from solid import scad_render_to_file,color
 from solid.objects import cube, cylinder, difference, translate, union, hull, rotate,circle
 from solid.utils import right,left,up,down,minkowski,rotate_extrude,distribute_in_grid
+from Templates.Box_Template import Create_Box,Create_Round_Box
 from math import sin,cos,pi
 
+
 SEGMENTS = 48
-wall = 3
+wall = 4
 
 def tokens_and_insert():
     height = 44 + wall
@@ -27,12 +29,15 @@ def tokens_and_insert():
         all_tokens += translate([((token_diameter + wall) * i  ),0,0])(token)
 
     # Create the token section of the box
-    token_box = (cube([width,token_box_length, height]))
+    token_box = (Create_Round_Box([width, token_box_length, height],radius=2))
+    # Create a flat back where the two sections join together
+    token_box = token_box + translate([0, token_box_length / 2, 0])(cube([width, token_box_length / 2, height]))
     token_box -= translate([(token_diameter / 2) + wall, (token_diameter / 2) - wall, wall])(all_tokens)
 
     # Create the main box with an insert
-    main_box = (cube([width, main_box_length, height]))
-    insert = translate([wall,wall,wall])(cube([width - wall * 2, width / 2 - wall * 2, height]))
+    main_box = Create_Box([width, main_box_length, height], minkowski=True)
+    insert = translate([wall, wall, wall])\
+        (Create_Round_Box([width - wall * 2, width / 2 - wall * 2, height],radius=2,shape='sphere'))
     main_box -= insert
 
     # Add the main box and token section together
