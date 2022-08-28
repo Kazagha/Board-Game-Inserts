@@ -38,13 +38,18 @@ def Create_Round_Box(size, radius, shape='cylinder'):
     x,y,z = size
     x = x - radius * 2
     y = y - radius * 2
-    z = z - 1
+    z = z - 1 if shape == 'cylinder' else z - radius * 2
 
-    round_box = (cube([x,y,z]))
+    round_box = (cube([x, y, z]))
+
     if shape == 'cylinder':
         round_box = minkowski()(round_box)(cylinder(r=radius))
     if shape == 'sphere':
         round_box = minkowski()(round_box)(sphere(r=radius))
+        # Move the box up as the Miknowski adds 1 radius to the bottom
+        round_box = translate([0,0,radius])(round_box)
+
+    # Translate the box back into the centre
     round_box = translate([radius,radius,0])(round_box)
 
     return round_box
