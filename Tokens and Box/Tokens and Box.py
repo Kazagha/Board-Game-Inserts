@@ -16,6 +16,7 @@ def tokens_and_insert():
     token_diameter = 20
     number_of_tokens = 5
     tolerence = 0.25
+    edge_radius = 2
 
     # Calculated Variables
     width = (token_diameter + wall) * number_of_tokens + (wall)
@@ -29,13 +30,13 @@ def tokens_and_insert():
         all_tokens += translate([((token_diameter + wall) * i  ),0,0])(token)
 
     # Create the token section of the box
-    token_box = (Create_Round_Box([width, token_box_length, height],radius=2))
+    token_box = (Create_Round_Box([width, token_box_length, height],radius=edge_radius))
     # Create a flat back where the two sections join together
     token_box = token_box + translate([0, token_box_length / 2, 0])(cube([width, token_box_length / 2, height]))
     token_box -= translate([(token_diameter / 2) + wall, (token_diameter / 2) - wall, wall])(all_tokens)
 
     # Create the main box with an insert
-    main_box = Create_Box([width, main_box_length, height], minkowski=True)
+    main_box = Create_Round_Box([width, main_box_length, height], radius=2)
     insert = translate([wall, wall, wall])\
         (Create_Round_Box([width - wall * 2, width / 2 - wall * 2, height],radius=2,shape='sphere'))
     main_box -= insert
@@ -44,20 +45,28 @@ def tokens_and_insert():
     # Overlapping 1 wall thickness
     main_box = translate([0,token_diameter - wall,0])(main_box) + token_box
 
+    # Create a lip around the box for the lid to sit in
+    box_size = [width + wall, main_box_length + token_box_length - wall + wall, wall * 2]
+    lip_insert = [box_size[0] - wall * 2, box_size[1] - wall * 2, box_size[2] + wall * 3]
+    box_lip = Create_Round_Box(box_size,radius=edge_radius)
+    box_lip_insert = translate([wall, wall, -wall])(Create_Round_Box(lip_insert,radius=2))
+    box_lip -= box_lip_insert
+
+    # Remove the lip from the main box
+    box_lip = translate([-wall / 2, -wall / 2,height - wall])(box_lip)
+    main_box -= box_lip
+
     # Create the lid with small inner lip
-    lid_thickness = 2
-    lip_width = width - (wall * 2) - (tolerence * 2)
-    lip_length = main_box_length - (wall * 2) - (tolerence * 2)
+    #lid_thickness = 2
+    #lip_width = width - (wall * 2) - (tolerence * 2)
+    #lip_length = main_box_length - (wall * 2) - (tolerence * 2)
     # Create main lid
-    lid = (cube([width, main_box_length + token_box_length - wall, lid_thickness]))
-    # Create the lip
-    lid_lip = (cube([lip_width, lip_length, lid_thickness]))
-    # Remove the insert
-    lid_lip -= translate([wall,wall,-1])(cube([lip_width - wall * 2, lip_length - wall * 2, lid_thickness + 2]))
-    # Position the lip
-    lid_lip = translate([wall + tolerence, token_box_length + tolerence, lid_thickness])(lid_lip)
-    # Add the lip to the lid
-    lid += lid_lip
+    lid = Create_Round_Box(box_size, radius=2)
+    # Create the lid insert
+    insert_size = [box_size[0] - wall * 2, box_size[1] - wall * 2, box_size[2]]
+    lid_insert = Create_Round_Box(insert_size, radius=edge_radius)
+    lid_insert = translate([wall, wall, wall])(lid_insert)
+    lid -= lid_insert
 
     # Combine all objects for output
     all_objects = [main_box, lid]
