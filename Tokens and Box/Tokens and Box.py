@@ -7,15 +7,15 @@ from solid.utils import right,left,up,down,minkowski,rotate_extrude,distribute_i
 from Templates.Box_Template import Create_Box,Create_Round_Box
 from math import sin,cos,pi
 
-
 SEGMENTS = 48
-wall = 4
+wall = 2
 
 def tokens_and_insert():
     height = 44 + wall
     token_diameter = 20
-    number_of_tokens = 5
-    tolerence = 0.25
+    number_of_tokens = 1
+    # Smallest
+    tolerence = 0.2
     edge_radius = 2
 
     # Calculated Variables
@@ -63,9 +63,9 @@ def tokens_and_insert():
     # Create main lid
     lid = Create_Round_Box(box_size, radius=2)
     # Create the lid insert
-    insert_size = [box_size[0] - wall * 2, box_size[1] - wall * 2, box_size[2]]
+    insert_size = [box_size[0] - wall * 2 + tolerence, box_size[1] - wall * 2 + tolerence, box_size[2]]
     lid_insert = Create_Round_Box(insert_size, radius=edge_radius)
-    lid_insert = translate([wall, wall, wall])(lid_insert)
+    lid_insert = translate([wall - tolerence / 2, wall - tolerence / 2, wall])(lid_insert)
     lid -= lid_insert
 
     # Combine all objects for output
